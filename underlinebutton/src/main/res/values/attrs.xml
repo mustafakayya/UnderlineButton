@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <declare-styleable name="UnderlineButton">
+
+    <attr name="ub_textSize" format="dimension"/>
+
+    <attr name="ub_text" format="string" />
+
+    <attr name="ub_textColor" format="color" />
+
+    <attr name="ub_textSelectedColor" format="color" />
+
+  </declare-styleable>
+
+</resources>
