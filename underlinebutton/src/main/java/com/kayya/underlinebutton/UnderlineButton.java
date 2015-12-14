@@ -26,6 +26,7 @@ public class UnderlineButton extends View {
     String text;
     int textWidth;
     int textHeight;
+    boolean shouldClick;
 
     public UnderlineButton(Context context) {
         super(context);
@@ -139,13 +140,19 @@ public class UnderlineButton extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                shouldClick= true;
+
             case MotionEvent.ACTION_POINTER_DOWN:
                 textPainter.setColor(selectedColor);
                 linePainter.setColor(selectedColor);
                 invalidate();
                 return true;
-
+            case MotionEvent.ACTION_MOVE:
+                shouldClick = false;
+                break;
             case MotionEvent.ACTION_UP:
+                if(shouldClick)
+                    performClick();
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_OUTSIDE:
             case MotionEvent.ACTION_CANCEL:
@@ -157,4 +164,6 @@ public class UnderlineButton extends View {
 
         return super.onTouchEvent(event);
     }
+
+
 }
