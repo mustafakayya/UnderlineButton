@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -27,6 +26,8 @@ public class UnderlineButton extends View {
     int textWidth;
     int textHeight;
     boolean shouldClick;
+    float lineStroke;
+    int downCoordinates;
 
     public UnderlineButton(Context context) {
         super(context);
@@ -34,6 +35,7 @@ public class UnderlineButton extends View {
         text = DefaultText;
         defaultColor = getResources().getColor(R.color.default_ub_textColor);
         selectedColor = getResources().getColor(R.color.default_ub_selected_textColor);
+
         init();
     }
 
@@ -59,7 +61,7 @@ public class UnderlineButton extends View {
             text = DefaultText ;
         }
 
-        Log.i("DP Size",""+textSize);
+
         defaultColor = typedArray.getColor(R.styleable.UnderlineButton_ub_textColor, getResources().getColor(R.color.default_ub_textColor));
         selectedColor = typedArray.getColor(R.styleable.UnderlineButton_ub_textSelectedColor,  getResources().getColor(R.color.default_ub_selected_textColor));
 
@@ -67,14 +69,14 @@ public class UnderlineButton extends View {
     }
 
     private void init() {
-        Log.i(TAG, "" + textSize);
+
         textPainter = new Paint();
         textPainter.setTextSize(textSize);
         textPainter.setColor(defaultColor);
         textPainter.setAntiAlias(true);
         textPainter.setTextAlign(Paint.Align.LEFT);
         linePainter = new Paint();
-        linePainter.setStrokeWidth(textSize/6);
+        linePainter.setStrokeWidth(8);
         linePainter.setColor(defaultColor);
         linePainter.setStrokeCap(Paint.Cap.ROUND);
         Rect bounds = new Rect();
@@ -82,7 +84,6 @@ public class UnderlineButton extends View {
         textWidth = bounds.width();
         textHeight = bounds.height();
 
-        //setLayoutParams(new LinearLayout.LayoutParams(textWidth+40,textHeight+35));
 
     }
 
@@ -138,8 +139,11 @@ public class UnderlineButton extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+
+                downCoordinates = DimensCalculator.px2dp(getContext(),(int)event.getX()) + DimensCalculator.px2dp(getContext(),(int)event.getY());
                 shouldClick= true;
 
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -148,7 +152,17 @@ public class UnderlineButton extends View {
                 invalidate();
                 return true;
             case MotionEvent.ACTION_MOVE:
-                shouldClick = false;
+
+                int moveCoordinates = DimensCalculator.px2dp(getContext(),(int)event.getX()) + DimensCalculator.px2dp(getContext(),(int)event.getY());
+                if( (moveCoordinates > downCoordinates && moveCoordinates-downCoordinates>20 ) ||
+                        (moveCoordinates < downCoordinates && downCoordinates-moveCoordinates>20 ) ){
+                    shouldClick = false;
+                    textPainter.setColor(defaultColor);
+                    linePainter.setColor(defaultColor);
+                    invalidate();
+                    return true;
+                }
+
                 break;
             case MotionEvent.ACTION_UP:
                 if(shouldClick)
